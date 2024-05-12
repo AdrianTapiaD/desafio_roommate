@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const fs = require('fs');
 const bodyParser = require('body-parser');
-const path = require('path'); // Import path module
+const path = require('path'); 
 app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -17,29 +17,29 @@ app.get('/', (req, res) => {
 
 app.post('/roommate', async (req, res) => {
     try {
-        const fetch = await import('node-fetch'); // Dynamic import
+        const fetch = await import('node-fetch');
         const response = await fetch.default('https://randomuser.me/api');
         const data = await response.json();
         const newUser = {
             name: `${data.results[0].name.first} ${data.results[0].name.last}`,
         };
 
-        // Add the new user to the roommates list
+
         roommates.push(newUser);
 
-        // Write the updated roommates list back to the JSON file
+
         fs.writeFile('roommates.json', JSON.stringify(roommates), (err) => {
             if (err) {
-                console.error('Error writing roommates file:', err);
+                console.error('Error al escribir archivo: ', err);
                 res.status(500).json({ error: 'Internal server error' });
             } else {
-                console.log('User added successfully:', newUser);
-                // Send a success response
-                res.status(200).json({ message: 'Roommate added successfully' });
+                console.log('Usuario agregado: ', newUser);
+                
+                res.status(200).json({ message: 'Se ha agreado a un roommate' });
             }
         });
     } catch (error) {
-        console.error('Error adding roommate:', error);
+        console.error('Error adding roommate: ', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -47,12 +47,12 @@ app.get('/roommates', (req, res) => {
     res.json({ roommates });
 });
 
-// GET all gastos
+
 app.get('/gastos', (req, res) => {
     res.json({ gastos });
 });
 
-// PUT (update) a gasto
+
 app.put('/gasto/:id', (req, res) => {
     const id = req.params.id;
     const { roommate, descripcion, monto } = req.body;
@@ -61,27 +61,27 @@ app.put('/gasto/:id', (req, res) => {
         gastos[index] = { id, roommate, descripcion, monto };
         fs.writeFile('gastos.json', JSON.stringify(gastos), (err) => {
             if (err) {
-                console.error('Error writing gastos file:', err);
+                console.error('Error al escribir archivo (gastos):', err);
                 res.status(500).json({ error: 'Internal server error' });
             } else {
-                res.json({ message: 'Gasto updated successfully' });
+                res.json({ message: 'Se ha actualizado el gasto' });
             }
         });
     } else {
-        res.status(404).json({ error: 'Gasto not found' });
+        res.status(404).json({ error: 'No se ha encontrado el gasto' });
     }
 });
 
-// DELETE a gasto
+
 app.delete('/gasto/:id', (req, res) => {
     const id = req.params.id;
     gastos = gastos.filter(gasto => gasto.id !== id);
     fs.writeFile('gastos.json', JSON.stringify(gastos), (err) => {
         if (err) {
-            console.error('Error writing gastos file:', err);
+            console.error('Error al escribir el archivo de gasto:', err);
             res.status(500).json({ error: 'Internal server error' });
         } else {
-            res.json({ message: 'Gasto deleted successfully' });
+            res.json({ message: 'Se ha eliminado el gasto' });
         }
     });
 });
